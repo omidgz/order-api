@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := app.New()
+	app := &app.App{}
 	ctx := context.Background()
 	if err := app.Start(ctx); err != nil {
 		log.Fatal(err)

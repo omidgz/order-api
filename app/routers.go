@@ -1,6 +1,7 @@
 package app
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -8,7 +9,7 @@ import (
 	"github.com/omidgz/order-api/handler"
 )
 
-func loadRouter() *chi.Mux {
+func (this *App) loadRouter() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 
@@ -16,17 +17,19 @@ func loadRouter() *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	router.Route("/orders", loadOrderRouter)
+	router.Route("/orders", this.loadOrderRouter)
 
-	return router
+	this.router = router
 }
 
-func loadOrderRouter(router chi.Router) {
-	orderHandler := &handler.Order{}
+func (this *App) loadOrderRouter(router chi.Router) {
+	orderHandler := handler.NewOrderHandler(this.DB)
 
 	router.Post("/", orderHandler.Create)
 	router.Get("/", orderHandler.List)
 	router.Get("/{id}", orderHandler.GetByID)
-	router.Put("/{id}", orderHandler.UpdateByID)
+	router.Put("/", orderHandler.UpdateByID)
 	router.Delete("/{id}", orderHandler.DeleteByID)
+	log.Println("Order routes loaded")
+
 }
